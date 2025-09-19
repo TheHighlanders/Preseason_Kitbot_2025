@@ -4,27 +4,53 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExampleSubsystem extends SubsystemBase {
+public class CoralReleaser extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+
+  SparkMax Dropper = new SparkMax(5, MotorType.kBrushless);
+
+  public CoralReleaser() {}
 
   /**
    * Example command factory method.
    *
    * @return a command
    */
-  public Command exampleMethodCommand() {
+  public Command RollCMD() {
+    // Inline construction of command goes here.
+    // Subsystem::RunOnce implicitly requires `this` subsystem.
+    return runOnce(
+        () -> {
+          Dropper.set(1);
+          /* one-time action goes here */
+        });
+  }
+
+  public Command GrabCMD() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
           /* one-time action goes here */
+          Dropper.set(0);/*Goes to downward position NOT FINISHED */
         });
   }
 
+    public Command StopDropCMD() {
+    // Inline construction of command goes here.
+    // Subsystem::RunOnce implicitly requires `this` subsystem.
+    return runOnce(
+        () -> {
+          /* one-time action goes here */
+          Dropper.set(-1);
+        });
+  }
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
