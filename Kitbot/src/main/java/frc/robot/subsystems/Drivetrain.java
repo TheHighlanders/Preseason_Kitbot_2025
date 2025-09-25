@@ -13,53 +13,20 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
-public class ExampleSubsystem extends SubsystemBase {
+public class Drivetrain extends SubsystemBase {
   private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed);
   private final SparkMax rightSparkMax = new SparkMax(2, MotorType.kBrushed);
-  //private final SparkMax leftSparkMax = new SparkMax(3, MotorType.kBrushed);
-  //private final SparkMax rightSparkMax = new SparkMax(deviceId:4, MotorType.kBrushed);
-}
-  double speed = 0.7;
-  
-  
-  //forward
-  public Command forwardCMD() {
+  private final SparkMax leftSparkMax2 = new SparkMax(3, MotorType.kBrushed);
+  private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);
 
-    return Commands.runOnce(() -> {
-      rightSparkMax.set(speed);
-      leftSparkMax.set(speed);
-    });
+  private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set);
+  private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
+
+  
+  public void go(double x, double y) {
+    dih.arcadeDrive(x, y);
+    fih.arcadeDrive(x, y);
   }
 
-    public Command forward() { // back
-
-      return Commands.runOnce(() ->{
-      rightSparkMax.set(-speed);
-      leftSparkMax.set(-speed);
-    });
-
-    public Command.runOnce(()-> {
-
-      return Command.runOnce(() ->{  //turn left
-        rightSparkMax.set(speed);
-      });
   
-  
-
-  //backward
-
-
-
-  //right
-
-
-
-
-  //left
-  
-
-
-
-
-  }
 }
