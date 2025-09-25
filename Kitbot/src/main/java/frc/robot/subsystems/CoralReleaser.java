@@ -7,16 +7,36 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExampleSubsystem extends SubsystemBase {
+public class CoralReleaser extends SubsystemBase {
+  Spark
   /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+  public CoralReleaser() {}
 
   /**
    * Example command factory method.
    *
    * @return a command
    */
-  public Command exampleMethodCommand() {
+  public Command Roll() {
+    // Inline construction of command goes here.
+    // Subsystem::RunOnce implicitly requires `this` subsystem.
+    return runOnce(
+        () -> {
+          /* one-time action goes here */
+        });
+  }
+
+
+  public Command Grab() {
+    // Inline construction of command goes here.
+    // Subsystem::RunOnce implicitly requires `this` subsystem.
+    return runOnce(
+        () -> {
+          /* one-time action goes here */
+        });
+  }
+
+  public Command StopDrop() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
