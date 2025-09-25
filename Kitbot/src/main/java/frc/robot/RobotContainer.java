@@ -12,6 +12,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -54,16 +55,25 @@ public class RobotContainer {
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    // Schedule `go` when the joystick moves,
-    // cancelling on release.
-    
+    // shoot the thingy fr
+    m_driverController.rightTrigger().onTrue(Commands.runOnce(coralreleaser.roll()));
+
+    // stopdrop - passive 
+    coralreleaser.setDefaultCommand(Commands.runOnce(() -> {
+      coralreleaser.stopdrop();
+    }, coralreleaser));
+
     // double supplier gets the value whenever you call it, not constant
     DoubleSupplier x = m_driverController::getLeftX;
     DoubleSupplier y = m_driverController::getRightY;
-    m_driverController.leftStick().onChange(
-      drivetrain.go(x.getAsDouble(),y.getAsDouble()));
+    
+    drivetrain.setDefaultCommand(Commands.runOnce(() -> {
+      drivetrain.go(x.getAsDouble(), y.getAsDouble());
+    }, drivetrain));
     
   }
+
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
