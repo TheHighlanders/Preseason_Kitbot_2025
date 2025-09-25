@@ -4,25 +4,40 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExampleSubsystem extends SubsystemBase {
+public class CoralReleaser extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+  public CoralReleaser() {}
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
+  private final SparkMax grabber = new SparkMax(0, MotorType.kBrushed);
+
   public Command exampleMethodCommand() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
-          /* one-time action goes here */
+
         });
+  }
+  public void grab() {
+    grabber.set(-1);
+  }
+  
+  public void release() {
+    grabber.set(1);
+  }
+
+  public void stop() {
+    grabber.set(0);
+  }
+
+  public void stopDrop() {
+    grabber.set(-1);
   }
 
   /**
@@ -32,7 +47,7 @@ public class ExampleSubsystem extends SubsystemBase {
    */
   public boolean exampleCondition() {
     // Query some boolean state, such as a digital sensor.
-    return false;
+    return true;
   }
 
   @Override
