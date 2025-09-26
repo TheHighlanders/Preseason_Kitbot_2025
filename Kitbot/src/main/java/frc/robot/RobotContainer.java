@@ -64,7 +64,7 @@ public class RobotContainer {
     DoubleSupplier y = m_driverController::getRightY;
     
     drivetrain.setDefaultCommand(Commands.runOnce(() -> {
-      drivetrain.go(x.getAsDouble(), y.getAsDouble());
+      drivetrain.go(y.getAsDouble(), x.getAsDouble());
     }, drivetrain));
     
   }
