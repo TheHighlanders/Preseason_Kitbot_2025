@@ -26,11 +26,7 @@ public class Drivetrain extends SubsystemBase {
   private final SparkMax leftSparkMax2 = new SparkMax(3, MotorType.kBrushed);
   private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);
 
-    /* 
-    Because left/left2 and right/right2 are doing the same thing, you can tell left2 to "follow" left1.Same with the right
-    Look through this code to find how to do that:
-    https://github.com/REVrobotics/REVLib-Examples/blob/main/Java/SPARK/Open%20Loop%20Arcade%20Drive/src/main/java/frc/robot/Robot.java   
-  */
+
   SparkMaxConfig leftSparkMaxConfig = new SparkMaxConfig();
   SparkMaxConfig rightSparkMaxConfig = new SparkMaxConfig();
   SparkMaxConfig leftSparkMax2Config = new SparkMaxConfig();
@@ -41,8 +37,8 @@ public class Drivetrain extends SubsystemBase {
   //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
 
-   double simLeftInput = 0.0;
-   double simRightInput = 0.0;
+   double leftIn = 0.0;
+   double rightIn = 0.0;
 
   Field2d field = new Field2d();
   DifferentialDriveOdometry odo = new DifferentialDriveOdometry(new Rotation2d(0), 0, 0);
@@ -59,15 +55,44 @@ public class Drivetrain extends SubsystemBase {
     dih.arcadeDrive(x, y);
     //fih.arcadeDrive(x, y);
 
-     // Estimate tank drive left/right inputs from arcadeDrive values
-     simLeftInput = x + y;
-     simRightInput = x - y;
-  }
+     // Estimate tank x left/right inputs from arcadeDrive values
+
+     double simLeftInput = x + y;
+     double simRightInput = x - y;
+
+
+    
+    //Drives the robot using arcade x.
+   
+    double maximum = Math.max(Math.abs(x), Math.abs(y));
+
+    if (x >= 0) {
+        if (y >= 0) {
+            leftIn = maximum;
+            rightIn = simRightInput;
+        }
+        else {
+            leftIn = simLeftInput;
+            rightIn = maximum;
+        }
+      }
+    else 
+        if (y >= 0) {
+            leftIn = simLeftInput;
+            rightIn =-maximum;
+        }
+        else {
+            leftIn = -maximum;
+            rightIn = simRightInput;
+        }
+    }
+
+  
   @Override
   public void simulationPeriodic() {
    // Clamp voltages to between -12 and 12
-   double leftVoltage = Math.max(-12, Math.min(12, simLeftInput * 12));
-   double rightVoltage = Math.max(-12, Math.min(12, simRightInput * 12));
+   double leftVoltage = Math.max(-12, Math.min(12, leftIn * 12));
+   double rightVoltage = Math.max(-12, Math.min(12, rightIn * 12));
 
    Util.update(leftVoltage, rightVoltage);
 
@@ -75,5 +100,5 @@ public class Drivetrain extends SubsystemBase {
    field.setRobotPose(Util.getPose());
   }
 
-  
+ 
 }
