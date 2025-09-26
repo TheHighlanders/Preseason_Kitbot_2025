@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -20,12 +21,18 @@ public class Drivetrain extends SubsystemBase {
   private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);
 
   private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set);
-  private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
+  //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
+  public Drivetrain() {
+    SparkMaxConfig config = new SparkMaxConfig();
+
+    config.follow(leftSparkMax);
+    config.follow(rightSparkMax);
+  } 
   
   public void go(double x, double y) {
     dih.arcadeDrive(x, y);
-    fih.arcadeDrive(x, y);
+    // fih.arcadeDrive(x, y);
   }
   
   public Command driveautCommand(double x, double y){
