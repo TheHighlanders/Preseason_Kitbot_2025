@@ -57,7 +57,8 @@ public class RobotContainer {
     m_driverController.rightBumper().onTrue(coralreleaser.StopDropCMD());
 
     // grab - passive 
-    coralreleaser.setDefaultCommand(coralreleaser.GrabCMD());
+    m_driverController.rightTrigger().onFalse(coralreleaser.GrabCMD());
+    m_driverController.rightBumper().onFalse(coralreleaser.GrabCMD());
 
     // double supplier gets the value whenever you call it, not constant
     DoubleSupplier x = m_driverController::getLeftX;
