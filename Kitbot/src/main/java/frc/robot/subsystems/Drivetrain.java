@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class Drivetrain extends SubsystemBase {
   private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed);
-  private final SparkMax rightSparkMax = new SparkMax(2, MotorType.kBrushed);
-  private final SparkMax leftSparkMax2 = new SparkMax(3, MotorType.kBrushed);
+  private final SparkMax rightSparkMax = new SparkMax(3, MotorType.kBrushed);
+  private final SparkMax leftSparkMax2 = new SparkMax(2, MotorType.kBrushed);
   private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);
 
   private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set);
@@ -31,7 +31,7 @@ public class Drivetrain extends SubsystemBase {
   } 
   
   public void go(double x, double y) {
-    dih.arcadeDrive(x, y);
+    dih.arcadeDrive(-x, -y);
     // fih.arcadeDrive(x, y);
   }
 

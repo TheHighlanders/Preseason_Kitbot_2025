@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CoralReleaser extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
 
-  SparkMax Dropper = new SparkMax(5, MotorType.kBrushless);
+  SparkMax Dropper = new SparkMax(5, MotorType.kBrushed);
 
   public CoralReleaser() {}
 

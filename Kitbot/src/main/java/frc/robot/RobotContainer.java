@@ -30,7 +30,7 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+      new CommandXboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -61,8 +61,8 @@ public class RobotContainer {
     m_driverController.rightBumper().onFalse(coralreleaser.GrabCMD());
 
     // double supplier gets the value whenever you call it, not constant
-    DoubleSupplier x = m_driverController::getLeftX;
-    DoubleSupplier y = m_driverController::getRightY;
+    DoubleSupplier x = m_driverController::getLeftY;
+    DoubleSupplier y = m_driverController::getRightX;
     
     drivetrain.setDefaultCommand(Commands.runOnce(() -> {
       drivetrain.go(y.getAsDouble(), x.getAsDouble());
