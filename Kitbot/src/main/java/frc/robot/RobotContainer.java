@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.coralauto;
 import frc.robot.subsystems.CoralReleaser;
 import frc.robot.subsystems.Drivetrain;
 
@@ -59,6 +60,9 @@ public class RobotContainer {
     // grab - passive 
     coralreleaser.setDefaultCommand(coralreleaser.GrabCMD());
 
+    // lb = autos (debug)
+    m_driverController.leftBumper().onTrue(new coralauto(drivetrain, coralreleaser));
+
     // double supplier gets the value whenever you call it, not constant
     DoubleSupplier x = m_driverController::getLeftX;
     DoubleSupplier y = m_driverController::getRightY;
@@ -78,6 +82,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Commands.none();
+    return new coralauto(drivetrain, coralreleaser);
   }
 }
