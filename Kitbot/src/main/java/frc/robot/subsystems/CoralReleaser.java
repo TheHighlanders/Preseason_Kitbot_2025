@@ -29,7 +29,9 @@ public class CoralReleaser extends SubsystemBase {
     return runOnce(
         () -> {
           Dropper.set(1);
+
           DriverStation.reportWarning("Roll", false);
+
         });
   }
 
@@ -39,7 +41,10 @@ public class CoralReleaser extends SubsystemBase {
     return runOnce(
         () -> {
           Dropper.set(0);/*Goes to downward position NOT FINISHED */
+
           DriverStation.reportWarning("Grab", false);
+
+
         });
   }
 
