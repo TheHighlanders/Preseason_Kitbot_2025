@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -28,6 +29,7 @@ public class CoralReleaser extends SubsystemBase {
     return runOnce(
         () -> {
           Dropper.set(1);
+          DriverStation.reportWarning("Run",false);
           /* one-time action goes here */
         });
   }
@@ -39,6 +41,7 @@ public class CoralReleaser extends SubsystemBase {
         () -> {
           /* one-time action goes here */
           Dropper.set(0);/*Goes to downward position NOT FINISHED */
+          DriverStation.reportWarning("Grab",false);
         });
   }
 
@@ -49,6 +52,7 @@ public class CoralReleaser extends SubsystemBase {
         () -> {
           /* one-time action goes here */
           Dropper.set(-1);
+          DriverStation.reportWarning("Stop",false);
         });
   }
   /**
