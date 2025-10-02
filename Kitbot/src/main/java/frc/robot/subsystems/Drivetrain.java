@@ -52,7 +52,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void go(double x, double y) {
-    dih.arcadeDrive(x, y);
+    dih.arcadeDrive(-x, -y);
     //fih.arcadeDrive(x, y);
 
      // Estimate tank x left/right inputs from arcadeDrive values
@@ -100,7 +100,7 @@ public class Drivetrain extends SubsystemBase {
    field.setRobotPose(Util.getPose());
   }
   public Command driveautCommand(double xSpeed, double zRotation){
-    return runOnce(
+    return run(
     ()-> {
       go(xSpeed, zRotation);
     }); 
