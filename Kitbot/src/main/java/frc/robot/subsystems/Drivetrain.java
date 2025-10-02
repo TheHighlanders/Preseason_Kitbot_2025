@@ -34,7 +34,7 @@ public class Drivetrain extends SubsystemBase {
     dih.arcadeDrive(x, y);
     // fih.arcadeDrive(x, y);
   }
-  
+
   public Command driveautCommand(double x, double y){
     return runOnce(
     ()-> {
