@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.coralauto;
 import frc.robot.subsystems.CoralReleaser;
 import frc.robot.subsystems.Drivetrain;
 
@@ -34,6 +35,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // run autos
+    new coralauto(drivetrain, coralreleaser);
     // Configure the trigger bindings
     configureBindings();
 
