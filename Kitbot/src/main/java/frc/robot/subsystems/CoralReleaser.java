@@ -11,17 +11,25 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/** Creates a new CoralReleaser subsystem.
+   * 
+   * 
+   */
 public class CoralReleaser extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
+  
 
   SparkMax Dropper = new SparkMax(5, MotorType.kBrushed);
 
   public CoralReleaser() {}
 
   /**
-   * Example command factory method.
+   * Shoots the coral, sets the speed of the motor to 1 
+   * 
+   * 
+   * @param None
+   * 
    *
-   * @return a command
+   * 
    */
   public Command RollCMD() {
     // Inline construction of command goes here.
@@ -29,32 +37,40 @@ public class CoralReleaser extends SubsystemBase {
     return runOnce(
         () -> {
           Dropper.set(1);
-
+          /* one-time action goes here */
           DriverStation.reportWarning("Roll", false);
-
         });
   }
 
+
+  /**
+   * Stops the motor, sets the speed to 0
+   * @param None
+   */
   public Command GrabCMD() {
+    
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
+          /* one-time action goes here */
           Dropper.set(0);/*Goes to downward position NOT FINISHED */
-
           DriverStation.reportWarning("Grab", false);
-
-
         });
   }
 
+    /**
+   * Drives the motor backwards, sets the speed to -1
+   * @param None
+   */
     public Command StopDropCMD() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
-          DriverStation.reportWarning("StopDrop", false);
+          /* one-time action goes here */
           Dropper.set(-1);
+          DriverStation.reportWarning("StopDrop", false);
         });
   }
   /**
