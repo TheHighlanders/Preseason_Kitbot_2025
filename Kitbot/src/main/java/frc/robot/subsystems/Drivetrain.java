@@ -5,11 +5,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -17,10 +16,15 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class Drivetrain extends SubsystemBase {
-  private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed);
+  private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed); 
   private final SparkMax rightSparkMax = new SparkMax(3, MotorType.kBrushed);
   private final SparkMax leftSparkMax2 = new SparkMax(2, MotorType.kBrushed);
   private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);
+  
+  SparkMaxConfig globalConfig = new SparkMaxConfig();
+  SparkMaxConfig leftFollowerConfig = new SparkMaxConfig();
+  SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
+  SparkMaxConfig rightFollowerConfig = new SparkMaxConfig();
 
   private Timer timer = new Timer();
 
@@ -28,10 +32,22 @@ public class Drivetrain extends SubsystemBase {
   //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
   public Drivetrain() {
-    SparkMaxConfig config = new SparkMaxConfig();
+    // configs may need to be adjusted to ensure that they work like they did at NERD
+    SparkMaxConfig globalConfig = new SparkMaxConfig();
+    SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
+    SparkMaxConfig leftFollowerConfig = new SparkMaxConfig();
+    SparkMaxConfig rightFollowerConfig = new SparkMaxConfig();
 
-    config.follow(leftSparkMax);
-    config.follow(rightSparkMax);
+    rightLeaderConfig.apply(globalConfig);
+
+    leftFollowerConfig.apply(globalConfig).follow(leftSparkMax);
+
+    rightFollowerConfig.apply(globalConfig).follow(rightSparkMax);
+
+    leftSparkMax.configure(globalConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    leftSparkMax2.configure(leftFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rightSparkMax.configure(rightLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rightSparkMax2.configure(rightFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   } 
   
   public void go(double x, double y) {
@@ -46,19 +62,13 @@ public class Drivetrain extends SubsystemBase {
   public Command drive(double seconds, double fwSpeed, double zRot) {
     timer.restart();
 
-  
-    
-    
     return runOnce (
     () -> {
-      
       while (timer.get() < seconds) {
         driveautCommand(fwSpeed, zRot);
       }
       driveautCommand(0, 0);
-    });
-    
-
+    }); 
   }
 
   public Command driveautCommand(double x, double y){

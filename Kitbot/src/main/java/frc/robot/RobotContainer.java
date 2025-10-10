@@ -74,7 +74,6 @@ public class RobotContainer {
   }
 
   
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -82,6 +81,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Commands.none();
+    return new coralauto(drivetrain, coralreleaser);
   }
 }
