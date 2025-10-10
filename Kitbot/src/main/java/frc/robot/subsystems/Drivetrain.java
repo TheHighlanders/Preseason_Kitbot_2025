@@ -16,14 +16,16 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class Drivetrain extends SubsystemBase {
-  private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed); 
-  private final SparkMax rightSparkMax = new SparkMax(3, MotorType.kBrushed);
-  private final SparkMax leftSparkMax2 = new SparkMax(2, MotorType.kBrushed);
-  private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);
-  
+  private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed); //leftleader
+  private final SparkMax leftSparkMax2 = new SparkMax(2, MotorType.kBrushed); //leftfollower
+
+  private final SparkMax rightSparkMax = new SparkMax(3, MotorType.kBrushed); //rightleader
+  private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);//rightfollower
+
+  // configs may need to be adjusted to ensure that they work like they did at NERD
   SparkMaxConfig globalConfig = new SparkMaxConfig();
-  SparkMaxConfig leftFollowerConfig = new SparkMaxConfig();
   SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
+  SparkMaxConfig leftFollowerConfig = new SparkMaxConfig();
   SparkMaxConfig rightFollowerConfig = new SparkMaxConfig();
 
   private Timer timer = new Timer();
@@ -32,13 +34,7 @@ public class Drivetrain extends SubsystemBase {
   //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
   public Drivetrain() {
-    // configs may need to be adjusted to ensure that they work like they did at NERD
-    SparkMaxConfig globalConfig = new SparkMaxConfig();
-    SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
-    SparkMaxConfig leftFollowerConfig = new SparkMaxConfig();
-    SparkMaxConfig rightFollowerConfig = new SparkMaxConfig();
-
-    rightLeaderConfig.apply(globalConfig);
+    rightLeaderConfig.apply(globalConfig).inverted(false);
 
     leftFollowerConfig.apply(globalConfig).follow(leftSparkMax);
 
@@ -51,8 +47,7 @@ public class Drivetrain extends SubsystemBase {
   } 
   
   public void go(double x, double y) {
-    dih.arcadeDrive(-x, -y);
-    // fih.arcadeDrive(x, y);
+    dih.arcadeDrive(x, y);
   }
   /**
    * Drives for x seconds then stops motor
@@ -61,13 +56,12 @@ public class Drivetrain extends SubsystemBase {
    */
   public Command drive(double seconds, double fwSpeed, double zRot) {
     timer.restart();
-
     return runOnce (
     () -> {
       while (timer.get() < seconds) {
-        driveautCommand(fwSpeed, zRot);
+        go(fwSpeed, zRot);
       }
-      driveautCommand(0, 0);
+      go(0, 0);
     }); 
   }
 

@@ -19,8 +19,8 @@ public class coralauto extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
     mdrivetrain.drive(3, 0.5, 0),
-    new WaitCommand(1),
-    mCoralReleaser.RollCMD()    
+    new WaitCommand(1)
+    //mCoralReleaser.RollCMD()    
     );
    
   }
