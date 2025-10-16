@@ -28,16 +28,23 @@ public class Drivetrain extends SubsystemBase {
   //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
   public Drivetrain() {
+    // Creates the configuration (aka config) to apply to motors
     SparkMaxConfig config = new SparkMaxConfig();
 
+    // Sets the config to follow the leftSparkMax then apply it to leftSparkMax2
+    // restmode is for if the sparkmax is swapped
+    // presist is for in case the sparkmax resets due to a breaker trip
     config.follow(leftSparkMax);
     leftSparkMax2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     config.follow(rightSparkMax);
     rightSparkMax2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    // removes the following then applies the config to rightSparkMax
     config.disableFollowerMode();
     rightSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // sets the config to be inverted and applies it to the leftsparkmax
+    // this means positive values drive both sides forward
     config.inverted(true);
     leftSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
