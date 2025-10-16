@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Auto2;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.coralauto;
@@ -12,7 +13,9 @@ import frc.robot.subsystems.CoralReleaser;
 import frc.robot.subsystems.Drivetrain;
 
 import java.util.function.DoubleSupplier;
+import java.util.jar.Attributes.Name;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,6 +31,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
+  private final SendableChooser<Command> m_Chooser = new SendableChooser<>();
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -36,10 +41,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // run autos
-    new coralauto(drivetrain, coralreleaser);
+    // new coralauto(drivetrain, coralreleaser);
     // Configure the trigger bindings
     configureBindings();
 
+    m_Chooser.setDefaultOption("Default Auto", new coralauto(drivetrain , coralreleaser));
+    m_Chooser.addOption("My auto" , new Auto2(drivetrain));
   }
 
   /**
