@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Auto2;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.coralauto;
@@ -13,6 +14,8 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,18 +28,28 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
 
+  //The robot's autos are defined here
+  private final Auto2 Auto2 = new Auto2(drivetrain, coralreleaser);
+  private final coralauto coralauto = new coralauto(drivetrain, coralreleaser);
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
-      new CommandXboxController(0);
+      new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // run autos
-    new coralauto(drivetrain, coralreleaser);
+    // Add commands to the autonomous command chooser
+m_chooser.setDefaultOption("Auto2", Auto2);
+m_chooser.addOption("Coral Auto", coralauto);
+
+// Put the chooser on the dashboard
+SmartDashboard.putData( "auto", m_chooser);
     // Configure the trigger bindings
     configureBindings();
 
@@ -60,20 +73,23 @@ public class RobotContainer {
     m_driverController.rightBumper().onTrue(coralreleaser.StopDropCMD());
 
     // grab - passive 
-    m_driverController.rightTrigger().onFalse(coralreleaser.GrabCMD());
-    m_driverController.rightBumper().onFalse(coralreleaser.GrabCMD());
+    coralreleaser.setDefaultCommand(coralreleaser.GrabCMD());
+
+    // lb = autos (debug)
+    m_driverController.leftBumper().onTrue(new coralauto(drivetrain, coralreleaser));
 
     // double supplier gets the value whenever you call it, not constant
-    DoubleSupplier x = m_driverController::getLeftY;
-    DoubleSupplier y = m_driverController::getRightX;
+    DoubleSupplier x = m_driverController::getLeftX;
+    DoubleSupplier y = m_driverController::getRightY;
     
     drivetrain.setDefaultCommand(Commands.runOnce(() -> {
-      drivetrain.go(y.getAsDouble(), -x.getAsDouble());
+      drivetrain.go(-m_driverController.getLeftY(), m_driverController.getRightX());
     }, drivetrain));
     
   }
 
   
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -81,6 +97,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new coralauto(drivetrain, coralreleaser);
+    return m_chooser.getSelected();
+
+    
   }
 }
