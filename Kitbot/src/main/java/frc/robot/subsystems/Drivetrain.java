@@ -22,28 +22,25 @@ public class Drivetrain extends SubsystemBase {
   private final SparkMax rightSparkMax = new SparkMax(3, MotorType.kBrushed); //rightleader
   private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);//rightfollower
 
-  // configs may need to be adjusted to ensure that they work like they did at NERD
-  SparkMaxConfig globalConfig = new SparkMaxConfig();
-  SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
-  SparkMaxConfig leftFollowerConfig = new SparkMaxConfig();
-  SparkMaxConfig rightFollowerConfig = new SparkMaxConfig();
-
   private Timer timer = new Timer();
 
-  private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set);
+  private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set); 
   //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
   public Drivetrain() {
-    rightLeaderConfig.apply(globalConfig).inverted(false);
+    SparkMaxConfig config = new SparkMaxConfig();
 
-    leftFollowerConfig.apply(globalConfig).follow(leftSparkMax);
+    config.follow(leftSparkMax);
+    leftSparkMax2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    rightFollowerConfig.apply(globalConfig).follow(rightSparkMax);
+    config.follow(rightSparkMax);
+    rightSparkMax2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    leftSparkMax.configure(globalConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    leftSparkMax2.configure(leftFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    rightSparkMax.configure(rightLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    rightSparkMax2.configure(rightFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    config.disableFollowerMode();
+    rightSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    config.inverted(true);
+    leftSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
   } 
   
   public void go(double x, double y) {
