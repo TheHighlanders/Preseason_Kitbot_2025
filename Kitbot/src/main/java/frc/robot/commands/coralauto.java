@@ -4,8 +4,7 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CoralReleaser;
@@ -20,13 +19,10 @@ public class coralauto extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      mdrivetrain.driveautCommand(0.5, 0),   
-      new WaitCommand(1),
-      mdrivetrain.driveautCommand(0, 0),
-      mCoralReleaser.RollCMD(),
-      new WaitCommand(1),
-      mCoralReleaser.GrabCMD()
-
+    mdrivetrain.drive(3, 0.5, 0),
+    new WaitCommand(1),
+    new PrintCommand("waiting")
+    //mCoralReleaser.RollCMD()    
     );
   }
    
