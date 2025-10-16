@@ -13,6 +13,7 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -68,7 +69,7 @@ public class RobotContainer {
     DoubleSupplier y = m_driverController::getRightX;
     
     drivetrain.setDefaultCommand(Commands.runOnce(() -> {
-      drivetrain.go(y.getAsDouble(), -x.getAsDouble());
+      drivetrain.go(-m_driverController.getLeftY(), m_driverController.getRightX());
     }, drivetrain));
     
   }
@@ -83,4 +84,16 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return new coralauto(drivetrain, coralreleaser);
   }
+  private final Command m_simpleAuto =
+    new DriveDistance(
+      AutoConstants.kAutoDriveDistanceInches, AutoConstants.kAutoDriveSpeed, m_robotDrive);
+    
+  private final Command m_complexAuto = new ComplexAuto(m_robotDrive, m_hatchSubsystem);
+  
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  
+  m_chooser.setDefaultOption("Simple Auto", m_simpleAuto);
+  m_chooser.addOption("Complex Auto", m_complexAuto);
+  
+  SmartDashboard.putData(m_chooser);
 }
