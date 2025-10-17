@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.coralauto;
+import frc.robot.commands.tankloss;
 import frc.robot.subsystems.CoralReleaser;
 import frc.robot.subsystems.Drivetrain;
 
@@ -30,6 +31,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
+  // copy lines 34
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -38,11 +40,13 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_chooser.setDefaultOption("Default Auto", new coralauto(drivetrain, coral));
-    m_chooser.addOption("My Auto", kCustomAuto);
+    // copy lines 43 to 44
+    m_chooser.setDefaultOption("Default Auto", new coralauto(drivetrain, coralreleaser));
+    m_chooser.addOption("tankloss", new tankloss(drivetrain, coralreleaser) );
     SmartDashboard.putData("Auto choices", m_chooser);
     // run autos
     new coralauto(drivetrain, coralreleaser);
+    new tankloss(drivetrain, coralreleaser);
     // Configure the trigger bindings
     configureBindings();
 
