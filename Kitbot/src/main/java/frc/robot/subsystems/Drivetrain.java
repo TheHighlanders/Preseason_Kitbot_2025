@@ -12,6 +12,8 @@ import java.io.ObjectInputFilter.Config;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,18 +25,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drivetrain extends SubsystemBase {
   private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed);
   private final SparkMax rightSparkMax = new SparkMax(2, MotorType.kBrushed);
+  
   private final SparkMax leftSparkMax2 = new SparkMax(3, MotorType.kBrushed);
   private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);
 
-
-  SparkMaxConfig leftSparkMaxConfig = new SparkMaxConfig();
-  SparkMaxConfig rightSparkMaxConfig = new SparkMaxConfig();
-  SparkMaxConfig leftSparkMax2Config = new SparkMaxConfig();
-  SparkMaxConfig rightSparkMax2Config = new SparkMaxConfig();
-
-  // only need 1
   private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set);
-  //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
 
    double leftIn = 0.0;
@@ -47,8 +42,18 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     SmartDashboard.putData("Field", field);
     SparkMaxConfig config = new SparkMaxConfig();
+
     config.follow(leftSparkMax);
+    leftSparkMax2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
     config.follow(rightSparkMax);
+    rightSparkMax2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+ 
+    config.disableFollowerMode();
+    rightSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    config.inverted(true);
+    leftSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public void go(double x, double y) {
