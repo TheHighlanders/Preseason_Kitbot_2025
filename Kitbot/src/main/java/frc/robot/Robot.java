@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.MjpegServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -23,6 +26,12 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
+
+ UsbCamera usbCamera = new UsbCamera("USB Camera 0", 0);
+MjpegServer mjpegServer1 = new MjpegServer("serve_USB Camera 0", 1181);
+mjpegServer1.setSource(usbCamera);
+
+CameraServer.startAutomaticCapture();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
