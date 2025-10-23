@@ -18,7 +18,7 @@ public class tankloss extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-    mdrivetrain.drive(4, 0.5, 0),
+    mdrivetrain.drive(2, 0.5, 0),
     new WaitCommand(1)
     //mCoralReleaser.RollCMD()    
     );
