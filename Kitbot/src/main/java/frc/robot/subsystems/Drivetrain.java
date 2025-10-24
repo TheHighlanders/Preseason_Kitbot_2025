@@ -12,6 +12,14 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.controller.LTVUnicycleController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.Kinematics;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -21,6 +29,11 @@ public class Drivetrain extends SubsystemBase {
 
   private final SparkMax rightSparkMax = new SparkMax(3, MotorType.kBrushed); //rightleader
   private final SparkMax rightSparkMax2 = new SparkMax(4, MotorType.kBrushed);//rightfollower
+
+  private final LTVUnicycleController controller = new LTVUnicycleController(0.02);
+
+  private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(0));
+  private final DifferentialDriveOdometry odo = new DifferentialDriveOdometry(null, null, null);
 
   private Timer timer = new Timer();
 
@@ -75,4 +88,30 @@ public class Drivetrain extends SubsystemBase {
       go(x, y);
     }); 
   }  
-}
+
+  public Pose2d getPose() {
+    return odo.getPoseMeters();
+  }
+
+  public void followTrajectory(DifferentialSample sample) {
+    
+     // Get the current pose of the robot
+        Pose2d pose = getPose();
+
+        // Get the velocity feedforward specified by the sample
+        ChassisSpeeds ff = sample.getChassisSpeeds();
+
+        // Generate the next speeds for the robot
+        ChassisSpeeds speeds = controller.calculate(
+          pose,
+          sample.getPose(),
+          ff.vxMetersPerSecond,
+          ff.omegaRadiansPerSecond
+        );
+         // Or, if you don't drive via ChassisSpeeds
+        DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds); // 
+        go(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+    }
+
+  }
+
