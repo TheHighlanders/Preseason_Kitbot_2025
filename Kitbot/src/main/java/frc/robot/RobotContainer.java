@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private SendableChooser<Command> m_chooser = new SendableChooser<Command>();
+  
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
@@ -35,19 +37,22 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(0);
 
-      SendableChooser<Command> m_chooser = new SendableChooser<>();
+      
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // A chooser for autonomous commands
+    
+    
     
     // Configure the trigger bindings
     configureBindings();
 
       // A chooser for autonomous commands
       // Add commands to the autonomous command chooser
-  m_chooser.setDefaultOption("CoralAuto", new coralauto(drivetrain, coralreleaser));
+      m_chooser.setDefaultOption("CoralAuto", new coralauto(drivetrain, coralreleaser));
   m_chooser.addOption("Other CoralAuto", new coralauto(drivetrain, coralreleaser));
+  
 
   // Put the chooser on the dashboard
   SmartDashboard.putData(m_chooser);

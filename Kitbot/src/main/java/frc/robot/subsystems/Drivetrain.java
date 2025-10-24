@@ -4,28 +4,42 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.io.ObjectInputFilter.Config;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
+import choreo.trajectory.DifferentialSample;
+import edu.wpi.first.math.controller.LTVUnicycleController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.Kinematics;
+import edu.wpi.first.math.kinematics.Odometry;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConstraint;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
   private final SparkMax leftSparkMax = new SparkMax(1, MotorType.kBrushed); //leftleader
@@ -39,11 +53,18 @@ public class Drivetrain extends SubsystemBase {
   private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set); 
   //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
+  private final LTVUnicycleController controller = new LTVUnicycleController(0.02);
+
   Field2d field = new Field2d();
   DifferentialDriveOdometry odo = new DifferentialDriveOdometry(new Rotation2d(0), 0, 0);
   // Creates the configuration (aka config) to apply to motors
   double leftIn;
   double rightIn;
+  private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(27));
+
+  
+
+  
 
   public Drivetrain() {
     SmartDashboard.putData("Field", field);
@@ -66,7 +87,10 @@ public class Drivetrain extends SubsystemBase {
     // this means positive values drive both sides forward
     config.inverted(true);
     leftSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  }
+
+
+   
+}
 
   public void go(double x, double y) {
     dih.arcadeDrive(-x, -y);
@@ -104,20 +128,12 @@ public class Drivetrain extends SubsystemBase {
             leftIn = -maximum;
             rightIn = simRightInput;
         }
-    }
+    
+  }
 
   
-  @Override
-  public void simulationPeriodic() {
-   // Clamp voltages to between -12 and 12
-   double leftVoltage = Math.max(-12, Math.min(12, leftIn * 12));
-   double rightVoltage = Math.max(-12, Math.min(12, rightIn * 12));
-
-   Util.update(leftVoltage, rightVoltage);
-
-   odo.update(Util.getHeading(), Util.getLeftDistance(), Util.getRightDistance());
-   field.setRobotPose(Util.getPose());
-  }
+  
+  
   
   /**
    * Drives for x seconds then stops motor
@@ -134,9 +150,47 @@ public class Drivetrain extends SubsystemBase {
       go(0, 0);
       new PrintCommand("drove for " + seconds + " sec");
     }); 
+
+    
   }
+
+  
+  public Pose2d getPose() {
+    return odo.getPoseMeters();
+  }
+
+    public void followTrajectory(DifferentialSample sample) {
+        // Get the current pose of the robot
+        Pose2d pose = getPose();
+
+        // Get the velocity feedforward specified by the sample
+        ChassisSpeeds ff = sample.getChassisSpeeds();
+
+        // Generate the next speeds for the robot
+        ChassisSpeeds speeds = controller.calculate(
+            pose,
+            sample.getPose(),
+            ff.vxMetersPerSecond,
+            ff.omegaRadiansPerSecond
+        );
+
+        DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds); // 
+        go(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
 
     
 }
+@Override
+  public void simulationPeriodic() {
+    // Clamp voltages to between -12 and 12
+    double leftVoltage = Math.max(-12, Math.min(12, leftIn * 12));
+    double rightVoltage = Math.max(-12, Math.min(12, rightIn * 12));
+ 
+    Util.update(leftVoltage, rightVoltage);
+ 
+    odo.update(Util.getHeading(), Util.getLeftDistance(), Util.getRightDistance());
+    field.setRobotPose(Util.getPose());
+   }
+}
+
 
  
