@@ -30,7 +30,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     //Creates USB Camera and Mjpeg Server [1] and connects them
     CameraServer.startAutomaticCapture();
-    //Creates Cvsource and Mjpeg Server [2] and connects the
+    //Creates Cvsource and Mjpeg Server [2] and connects them
    
   }
 
