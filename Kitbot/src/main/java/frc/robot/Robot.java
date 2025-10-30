@@ -6,12 +6,14 @@ package frc.robot;
 
 import org.opencv.core.Mat;
 
+import choreo.auto.AutoFactory;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Drivetrain;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -20,8 +22,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  
 
   private final RobotContainer m_robotContainer;
+  
+ 
 
 
   /**
@@ -29,6 +34,8 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
+
+    
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -40,6 +47,10 @@ public class Robot extends TimedRobot {
     CvSource outputStream = CameraServer.putVideo("Blur", 640, 480);
 
     CameraServer.startAutomaticCapture();
+    
+
+
+    
   }
 
   /**
@@ -80,7 +91,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    
+  }
 
   @Override
   public void teleopInit() {

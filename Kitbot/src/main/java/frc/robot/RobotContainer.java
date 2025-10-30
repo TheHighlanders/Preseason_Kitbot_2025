@@ -4,21 +4,20 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.coralauto;
-import frc.robot.subsystems.CoralReleaser;
-import frc.robot.subsystems.Drivetrain;
-
 import java.util.function.DoubleSupplier;
 
+import choreo.auto.AutoFactory;
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.coralauto;
+import frc.robot.subsystems.CoralReleaser;
+import frc.robot.subsystems.Drivetrain;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -32,6 +31,9 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
+  private final AutoFactory autoFactory;
+
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -41,12 +43,26 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    autoFactory = new AutoFactory(
+    drivetrain::getPose, // A function that returns the current robot pose
+    drivetrain.odo::resetPose, // A function that resets the current robot pose to the provided Pose2d
+    drivetrain::followTrajectory, // The drive subsystem trajectory follower 
+    true, // If alliance flipping should be enabled 
+    drivetrain // The drive subsystem
+);
     // A chooser for autonomous commands
+
+    
     
     
     
     // Configure the trigger bindings
     configureBindings();
+
+
+
+    
+
 
       // A chooser for autonomous commands
       // Add commands to the autonomous command chooser
@@ -56,6 +72,7 @@ public class RobotContainer {
 
   // Put the chooser on the dashboard
   SmartDashboard.putData(m_chooser);
+  
     
 
   }
@@ -95,13 +112,23 @@ public class RobotContainer {
   }
 
   
+
+  
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return m_chooser.getSelected();
+    AutoRoutine routine = autoFactory.newRoutine("taxi");
+
+    // Load the routine's trajectories
+    AutoTrajectory driveToMiddle = routine.trajectory("test");
+
+    // When the routine begins, reset odometry and start the first trajectory (1)
+    return  Commands.sequence(
+      driveToMiddle.resetOdometry(),
+      driveToMiddle.cmd()
+  );
   }
 }

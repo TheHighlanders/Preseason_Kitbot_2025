@@ -56,7 +56,7 @@ public class Drivetrain extends SubsystemBase {
   private final LTVUnicycleController controller = new LTVUnicycleController(0.02);
 
   Field2d field = new Field2d();
-  DifferentialDriveOdometry odo = new DifferentialDriveOdometry(new Rotation2d(0), 0, 0);
+  public DifferentialDriveOdometry odo = new DifferentialDriveOdometry(new Rotation2d(0), 0, 0);
   // Creates the configuration (aka config) to apply to motors
   double leftIn;
   double rightIn;
@@ -142,13 +142,14 @@ public class Drivetrain extends SubsystemBase {
    */
   public Command drive(double seconds, double fwSpeed, double zRot) {
     timer.restart();
+    timer.start();
     return runOnce (
     () -> {
       while (timer.get() < seconds) {
+        new PrintCommand("" + timer.get());
         go(fwSpeed, zRot);
       }
       go(0, 0);
-      new PrintCommand("drove for " + seconds + " sec");
     }); 
 
     
