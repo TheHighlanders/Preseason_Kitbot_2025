@@ -13,6 +13,7 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,6 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+   private final Drivetrain driveSubsystem = new Drivetrain();
+    private final AutoFactory autoFactory;
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
@@ -35,6 +38,13 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    autoFactory = new AutoFactory(
+            driveSubsystem::getPose, // A function that returns the current robot pose
+            driveSubsystem::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
+            driveSubsystem::followTrajectory, // The drive subsystem trajectory follower 
+            true, // If alliance flipping should be enabled 
+            driveSubsystem // The drive subsystem
+        );
     // run autos
     new coralauto(drivetrain, coralreleaser);
     // Configure the trigger bindings

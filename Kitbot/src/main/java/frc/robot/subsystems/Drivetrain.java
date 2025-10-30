@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import choreo.trajectory.DifferentialSample;
 import edu.wpi.first.math.controller.LTVUnicycleController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -20,6 +21,9 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.AnalogAccelerometer;
+import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -34,7 +38,9 @@ public class Drivetrain extends SubsystemBase {
 
   private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(0));
   private final DifferentialDriveOdometry odo = new DifferentialDriveOdometry(null, null, null);
-  
+  private final AnalogGyro gyro = new AnalogGyro(0);
+  private final Encoder leftEncoder = new Encoder(0,1);
+  private final Encoder rightEncoder = new Encoder(2,3);
   private Timer timer = new Timer();
 
   private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set); 
@@ -88,7 +94,10 @@ public class Drivetrain extends SubsystemBase {
       go(x, y);
     }); 
   }
+public void resetOdometry(Pose2d pose) {
+  odo.resetPosition (gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance(), pose);
 
+}
   public Pose2d getPose() {
     return odo.getPoseMeters();
   }
