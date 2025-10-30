@@ -27,12 +27,14 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
-    autoFactory = new AutoFactory(null, null, null, isAutonomous(), driveSubsystem
+    autoFactory = new AutoFactory(
+    driveSubsystem::getPose, // A function that returns the current robot pose
+    driveSubsystem::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
+    driveSubsystem::followTrajectory, // The Drive Subsystem trajectory follower
+true, //If allience flipping should be enabled
+driveSubsystem, // The Drive Subsystem
     
-    
-    
-    
-    )
+    );
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
