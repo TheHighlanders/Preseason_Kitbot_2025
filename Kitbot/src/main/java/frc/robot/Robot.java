@@ -98,4 +98,19 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  public class Robot extends TimedRobot {
+    private final Drive driveSubsystem = new Drive();
+    private final AutoFactory autoFactory;
+
+    public Robot() {
+        autoFactory = new AutoFactory(
+            driveSubsystem::getPose, // A function that returns the current robot pose
+            driveSubsystem::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
+            driveSubsystem::followTrajectory, // The drive subsystem trajectory follower 
+            true, // If alliance flipping should be enabled 
+            driveSubsystem, // The drive subsystem
+        );
+    }
+}
 }
