@@ -12,6 +12,15 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.AnalogAccelerometer;
+import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -25,8 +34,13 @@ public class Drivetrain extends SubsystemBase {
   private Timer timer = new Timer();
 
   private DifferentialDrive dih = new DifferentialDrive(leftSparkMax::set, rightSparkMax::set); 
-  //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
 
+  private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(0));
+  private final DifferentialDriveOdometry odo = new DifferentialDriveOdometry(null, null, null);
+  //private DifferentialDrive fih = new DifferentialDrive(leftSparkMax2::set, rightSparkMax2::set);
+private final AnalogGyro gyro = new AnalogGyro(0);
+private final Encoder leftEncoder = new Encoder(0,1);
+private final Encoder rightEncoder = new Encoder(2,3);
   public Drivetrain() {
     // Creates the configuration (aka config) to apply to motors
     SparkMaxConfig config = new SparkMaxConfig();
@@ -75,4 +89,33 @@ public class Drivetrain extends SubsystemBase {
       go(x, y);
     }); 
   }  
+    public void resetOdometry(Pose2d pose) {
+odo.resetPosition(gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance(), pose);
+    }
+
+  public Pose2d getPose(){
+    return odo.getPoseMeters();
+  }
+
+  
+
+  public void followTrajectory(DifferentialSample sample) {
+    // Get the current pose of the robot
+    Pose2d pose = getPose();
+
+    // Get the velocity feedforward specified by the sample
+    ChassisSpeeds ff = sample.getChassisSpeeds();
+
+    // Generate the next speeds for the robot
+    ChassisSpeeds speeds = controller.calculate(
+        pose,
+        sample.getPose(),
+        ff.vxMetersPerSecond,
+        ff.omegaRadiansPerSecond
+    );
+
+    // Or, if you don't drive via ChassisSpeeds
+    DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds); // 
+    go(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+}
 }

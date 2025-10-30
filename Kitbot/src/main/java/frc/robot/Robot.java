@@ -10,6 +10,7 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Drivetrain;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -18,6 +19,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private final Drivetrain driveSubsystem = new Drivetrain();
+    private final AutoFactory autoFactory;
+
 
   private final RobotContainer m_robotContainer;
 
@@ -35,6 +39,13 @@ CameraServer.startAutomaticCapture();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    autoFactory = new AutoFactory(
+      driveSubsystem::getPose, // A function that returns the current robot pose
+      driveSubsystem::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
+      driveSubsystem::followTrajectory, // The drive subsystem trajectory follower 
+      true, // If alliance flipping should be enabled 
+      driveSubsystem, // The drive subsystem
+  );
   }
 
   /**
