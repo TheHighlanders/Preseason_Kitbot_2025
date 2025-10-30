@@ -14,6 +14,7 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,9 +38,16 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(0);
-
+      private final AutoFactory autoFactory;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    autoFactory = new AutoFactory(
+         drivetrain::getPose, // A function that returns the current robot pose
+         drivetrain::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
+         drivetrain::followTrajectory, // The drive subsystem trajectory follower 
+         true, // If alliance flipping should be enabled 
+         drivetrain
+         ); // The drive subsystem
     // run autos
     final coralauto coralauto = new coralauto(drivetrain, coralreleaser);
     final spinning spinning = new spinning(drivetrain, coralreleaser);
