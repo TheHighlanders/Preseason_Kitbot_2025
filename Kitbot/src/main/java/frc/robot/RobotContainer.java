@@ -5,14 +5,18 @@
 package frc.robot;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
+import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.coralauto;
@@ -26,12 +30,71 @@ import frc.robot.subsystems.Drivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private SendableChooser<Command> m_chooser = new SendableChooser<Command>();
+  // Create the auto chooser
+  private AutoChooser autoChooser = new AutoChooser();
+
+  
+
+  // Put the auto chooser on the dashboard
+  
   
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
-  private final AutoFactory autoFactory;
+  private final AutoFactory autoFactory = new AutoFactory(
+    drivetrain::getPose, // A function that returns the current robot pose
+    drivetrain.odo::resetPose, // A function that resets the current robot pose to the provided Pose2d
+    drivetrain::followTrajectory, // The drive subsystem trajectory follower 
+    true, // If alliance flipping should be enabled 
+    drivetrain // The drive subsystem
+);
+
+private AutoRoutine routine = autoFactory.newRoutine("taxi");
+
+// Load the routine's trajectories
+private AutoTrajectory driveToMiddle = routine.trajectory("test");
+
+private Supplier<AutoRoutine> rSupplier = new Supplier<AutoRoutine>() {
+  public AutoRoutine get() {
+    
+      AutoRoutine routine = autoFactory.newRoutine("taxi");
+  
+      // Load the routine's trajectories
+      AutoTrajectory driveToMiddle = routine.trajectory("test");
+  
+      // When the routine begins, reset odometry and start the first trajectory (1)
+      routine.active().onTrue(
+          Commands.sequence(
+              driveToMiddle.resetOdometry(),
+              driveToMiddle.cmd(),
+              new PrintCommand("works")
+          )
+      );
+  
+      return routine;
+  
+  
+
+    // Load the routine's trajectories
+
+  };
+};
+ 
+
+ // private AutoRoutine pickupAndScoreAuto() {
+ /*   
+
+    // When the routine begins, reset odometry and start the first trajectory (1)
+    // routine.active().onTrue(
+        Commands.sequence(
+   //         driveToMiddle.resetOdometry(),
+            driveToMiddle.cmd()
+        )
+    );
+//
+    return routine;
+}
+*/
 
 
 
@@ -41,15 +104,17 @@ public class RobotContainer {
 
       
 
+      
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    autoFactory = new AutoFactory(
-    drivetrain::getPose, // A function that returns the current robot pose
-    drivetrain.odo::resetPose, // A function that resets the current robot pose to the provided Pose2d
-    drivetrain::followTrajectory, // The drive subsystem trajectory follower 
-    true, // If alliance flipping should be enabled 
-    drivetrain // The drive subsystem
-);
+    /* autoFactory =
+
+/*
+     * might be in the wrong place. Look at this link: https://choreo.autos/choreolib/auto-factory/#using-command-compositions
+     */
+    
+
+
 
     /*
      * Your autochooser isn't set up to run any of your paths currently
@@ -61,11 +126,15 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     // Add commands to the autonomous command chooser
-    m_chooser.setDefaultOption("CoralAuto", new coralauto(drivetrain, coralreleaser));
-    m_chooser.addOption("Other CoralAuto", new coralauto(drivetrain, coralreleaser));
+    // Add options to the chooser
+  autoChooser.addRoutine("Example Routine", rSupplier);
+ // autoChooser.addCmd("Example Auto Command", );
   
     // Put the chooser on the dashboard
-    SmartDashboard.putData(m_chooser);
+    SmartDashboard.putData(autoChooser);
+
+  // Schedule the selected auto during the autonomous period
+  
   
     
 
@@ -114,18 +183,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    /*
-     * might be in the wrong place. Look at this link: https://choreo.autos/choreolib/auto-factory/#using-command-compositions
-     */
-    AutoRoutine routine = autoFactory.newRoutine("taxi");
-
-    // Load the routine's trajectories
-    AutoTrajectory driveToMiddle = routine.trajectory("test");
+    
 
     // When the routine begins, reset odometry and start the first trajectory (1)
-    return  Commands.sequence(
-      driveToMiddle.resetOdometry(),
-      driveToMiddle.cmd()
-  );
+    return autoChooser.selectedCommandScheduler();
+    
   }
 }
