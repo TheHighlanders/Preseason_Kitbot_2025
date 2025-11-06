@@ -14,12 +14,15 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import choreo.auto.AutoRoutine;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -29,6 +32,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+    private final AutoChooser autoChooser;
+
+       
+
+
+
   // The robot's subsystems and commands are defined here...
   private final CoralReleaser coralreleaser = new CoralReleaser();
   private final Drivetrain drivetrain = new Drivetrain();
@@ -38,26 +47,31 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(0);
-      private final AutoFactory autoFactory;
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+ /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    autoFactory = new AutoFactory(
-         drivetrain::getPose, // A function that returns the current robot pose
-         drivetrain::resetOdometry, // A function that resets the current robot pose to the provided Pose2d
-         drivetrain::followTrajectory, // The drive subsystem trajectory follower 
-         true, // If alliance flipping should be enabled 
-         drivetrain
-         ); // The drive subsystem
-    // run autos
-    final coralauto coralauto = new coralauto(drivetrain, coralreleaser);
-    final spinning spinning = new spinning(drivetrain, coralreleaser);
-    m_chooser.setDefaultOption("Default Auto", coralauto);
-    m_chooser.addOption("My Auto", new spinning(drivetrain,coralreleaser ));
-    SmartDashboard.putData("Auto choices", m_chooser);
+
 
     new coralauto(drivetrain, coralreleaser);
     // Configure the trigger bindings
+
     configureBindings();
+ //Other robot initialization code
+        // ...
+
+        // Create the auto chooser
+        autoChooser = new AutoChooser();
+
+        // Add options to the chooser
+        autoChooser.addRoutine("Example Routine", this::exampleRoutine);
+        autoChooser.addCmd("Example Auto Command", this::exampleAutoCommand);
+
+        // Put the auto chooser on the dashboard
+        SmartDashboard.putData(autoChooser);
+
+        // Schedule the selected auto during the autonomous period
+        RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
+    
+
 
   }
   /**
@@ -101,4 +115,14 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return m_chooser.getSelected();
   }
+  
+    private AutoRoutine exampleRoutine() {
+          return null;
+        // ...
+    }
+
+    private Command exampleAutoCommand() {
+          return null;
+        // ...
+    }
 }
