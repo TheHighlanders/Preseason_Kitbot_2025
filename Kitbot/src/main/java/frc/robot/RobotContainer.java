@@ -13,6 +13,7 @@ import frc.robot.subsystems.Drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +37,8 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(0);
 
+  private final AutoChooser autoChooser;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoFactory = new AutoFactory(
@@ -53,6 +56,13 @@ drivetrain, // The Drive Subsystem
     configureBindings();
 
   }
+
+  autoChooser = new autoChooser();
+
+  autoChooser.addRoutine(, this::);
+  autoChooser.addCmd(, this::);
+
+  SmartDashboard.putData(autoChooser);
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
