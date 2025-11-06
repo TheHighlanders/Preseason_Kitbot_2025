@@ -63,9 +63,6 @@ public class Drivetrain extends SubsystemBase {
   private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(27));
 
   
-
-  
-
   public Drivetrain() {
     SmartDashboard.putData("Field", field);
     SparkMaxConfig config = new SparkMaxConfig();
@@ -88,109 +85,99 @@ public class Drivetrain extends SubsystemBase {
     config.inverted(true);
     leftSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-
-   
-}
-
-  public void go(double x, double y) {
-    dih.arcadeDrive(-x, -y);
-    //fih.arcadeDrive(x, y);
-
-     // Estimate tank x left/right inputs from arcadeDrive values
-
-     double simLeftInput = x + y;
-     double simRightInput = x - y;
-
-     
-
-
-    
-    //Drives the robot using arcade x.
-   
-    double maximum = Math.max(Math.abs(x), Math.abs(y));
-
-    if (x >= 0) {
-        if (y >= 0) {
-            leftIn = maximum;
-            rightIn = simRightInput;
-        }
-        else {
-            leftIn = simLeftInput;
-            rightIn = maximum;
-        }
-      }
-    else 
-        if (y >= 0) {
-            leftIn = simLeftInput;
-            rightIn =-maximum;
-        }
-        else {
-            leftIn = -maximum;
-            rightIn = simRightInput;
-        }
-    
   }
 
-  
-  
-  
-  
+  public void go(double leftSpeed, double rightSpeed) {
+    double maxSpeed = 1;
+    leftIn = Math.max(-1, Math.min(1, leftSpeed / maxSpeed));
+    rightIn = Math.max(-1, Math.min(1, rightSpeed / maxSpeed));
+  }
+
+  /*
+   * Commented out because this was preventing the robot from running in the sim
+   * The robot should drive in auto now but might struggle in teleop
+   */
+  // public void go(double x, double y) {
+  //   dih.arcadeDrive(-x, -y);
+  //   //fih.arcadeDrive(x, y);
+  //    // Estimate tank x left/right inputs from arcadeDrive values
+  //    double simLeftInput = x + y;
+  //    double simRightInput = x - y;
+  //   //Drives the robot using arcade x. 
+  //   double maximum = Math.max(Math.abs(x), Math.abs(y));
+  //   if (x >= 0) {
+  //       if (y >= 0) {
+  //           leftIn = maximum;
+  //           rightIn = simRightInput;
+  //       }
+  //       else {
+  //           leftIn = simLeftInput;
+  //           rightIn = maximum;
+  //       }
+  //     }
+  //   else 
+  //       if (y >= 0) {
+  //           leftIn = simLeftInput;
+  //           rightIn =-maximum;
+  //       }
+  //       else {
+  //           leftIn = -maximum;
+  //           rightIn = simRightInput;
+  //       }
+  // }
+
+
   /**
    * Drives for x seconds then stops motor
    * 
    * 
    */
-  public Command drive(double seconds, double fwSpeed, double zRot) {
-    timer.restart();
-    timer.start();
-    return runOnce (
-    () -> {
-      while (timer.get() < seconds) {
-        new PrintCommand("" + timer.get());
-        go(fwSpeed, zRot);
-      }
-      go(0, 0);
-    }); 
-
-    
-  }
+  // public Command drive(double seconds, double fwSpeed, double zRot) {
+  //   timer.restart();
+  //   timer.start();
+  //   return runOnce (
+  //   () -> {
+  //     while (timer.get() < seconds) {
+  //       new PrintCommand("" + timer.get());
+  //       go(fwSpeed, zRot);
+  //     }
+  //     go(0, 0);
+  //   });   
+  // }
+  public Command drive(double seconds, double fwd, double rot) {
+    return run(() -> go(fwd, rot));
+}
 
   
   public Pose2d getPose() {
     return odo.getPoseMeters();
   }
 
-    public void followTrajectory(DifferentialSample sample) {
-        // Get the current pose of the robot
-        Pose2d pose = getPose();
+  public void followTrajectory(DifferentialSample sample) {
+    // Get the current pose of the robot
+    Pose2d pose = getPose();
 
-        // Get the velocity feedforward specified by the sample
-        ChassisSpeeds ff = sample.getChassisSpeeds();
+    // Get the velocity feedforward specified by the sample
+    ChassisSpeeds ff = sample.getChassisSpeeds();
 
-        // Generate the next speeds for the robot
-        ChassisSpeeds speeds = controller.calculate(
-            pose,
-            sample.getPose(),
-            ff.vxMetersPerSecond,
-            ff.omegaRadiansPerSecond
-        );
+    // Generate the next speeds for the robot
+    ChassisSpeeds speeds = controller.calculate(
+      pose,
+      sample.getPose(),
+      ff.vxMetersPerSecond,
+      ff.omegaRadiansPerSecond
+    );
 
-        DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds); // 
-        go(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+    DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds); // 
+    go(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+  }
 
-    
-}
-@Override
   public void simulationPeriodic() {
-    // Clamp voltages to between -12 and 12
-    double leftVoltage = Math.max(-12, Math.min(12, leftIn * 12));
-    double rightVoltage = Math.max(-12, Math.min(12, rightIn * 12));
- 
-    Util.update(leftVoltage, rightVoltage);
- 
+    Util.update(leftIn * 12, rightIn * 12);
     odo.update(Util.getHeading(), Util.getLeftDistance(), Util.getRightDistance());
     field.setRobotPose(Util.getPose());
-   }
+  }
+
 }
 
 

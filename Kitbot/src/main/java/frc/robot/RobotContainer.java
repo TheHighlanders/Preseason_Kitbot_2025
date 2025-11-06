@@ -50,28 +50,22 @@ public class RobotContainer {
     true, // If alliance flipping should be enabled 
     drivetrain // The drive subsystem
 );
-    // A chooser for autonomous commands
 
+    /*
+     * Your autochooser isn't set up to run any of your paths currently
+     * Look at the autochooser in the Cheoro Docs: https://choreo.autos/choreolib/auto-factory/
+     * It's at the bottom. It has a more path friendly way of adding paths
+     */
     
-    
-    
-    
+    // A chooser for autonomous commands
     // Configure the trigger bindings
     configureBindings();
-
-
-
-    
-
-
-      // A chooser for autonomous commands
-      // Add commands to the autonomous command chooser
-      m_chooser.setDefaultOption("CoralAuto", new coralauto(drivetrain, coralreleaser));
-  m_chooser.addOption("Other CoralAuto", new coralauto(drivetrain, coralreleaser));
+    // Add commands to the autonomous command chooser
+    m_chooser.setDefaultOption("CoralAuto", new coralauto(drivetrain, coralreleaser));
+    m_chooser.addOption("Other CoralAuto", new coralauto(drivetrain, coralreleaser));
   
-
-  // Put the chooser on the dashboard
-  SmartDashboard.putData(m_chooser);
+    // Put the chooser on the dashboard
+    SmartDashboard.putData(m_chooser);
   
     
 
@@ -120,6 +114,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    /*
+     * might be in the wrong place. Look at this link: https://choreo.autos/choreolib/auto-factory/#using-command-compositions
+     */
     AutoRoutine routine = autoFactory.newRoutine("taxi");
 
     // Load the routine's trajectories
